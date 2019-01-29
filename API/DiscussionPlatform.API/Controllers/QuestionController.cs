@@ -1,134 +1,99 @@
-﻿using DiscussionPlatform.API.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
+using DiscussionPlatform.API.Models;
 
 namespace DiscussionPlatform.API.Controllers
 {
     public class QuestionController : ApiController
     {
-        // GET api/<controller>
-        //declare sql connection and command objects here
-        private SqlConnection _conn;
-        private SqlDataAdapter _adapter;
+        private DPModel db = new DPModel();
 
-        public IEnumerable<Question> Get()
+        // GET: api/Question
+        public IQueryable<Question> GetQuestions()
         {
-            _conn = new SqlConnection("data source=DESKTOP-O1N3VSU ; Initial catalog=qadb ; user id=sa; password=pass@word1;");
-            DataTable _dt = new DataTable();
-            var query = "select * from Question";
-            _adapter = new SqlDataAdapter
+            return db.Question;
+        }
+
+        // GET: api/Question/5
+       
+
+        // PUT: api/Question/5
+        [ResponseType(typeof(void))]
+        public IHttpActionResult PutQuestion(int id, Question question)
+        {
+            if (id != question.Id)
             {
-                SelectCommand = new SqlCommand(query, _conn)
-            };
-            _adapter.Fill(_dt);
-            List<Question> questions = new List<Models.Question>(_dt.Rows.Count);
-            if (_dt.Rows.Count > 0)
+                return BadRequest();
+            }
+
+            db.Entry(question).State = EntityState.Modified;
+
+            try
             {
-                foreach (DataRow questionrecord in _dt.Rows)
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!QuestionExists(id))
                 {
-                   questions.Add(new ReadQuestion(questionrecord));
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
                 }
             }
 
-            return questions;
+            return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // GET api/<controller>/5
-
-        public IEnumerable<Question> Get(int id)
+        // POST: api/Question
+        [ResponseType(typeof(Question))]
+        public IHttpActionResult PostQuestion(Question question)
         {
-            _conn = new SqlConnection("data source=DESKTOP-O1N3VSU ; Initial catalog=qadb; user id=sa; password=pass@word1;");
-            DataTable _dt = new DataTable();
-            var query = "select * from Question where id=" + id;
-            _adapter = new SqlDataAdapter
-            {
-                SelectCommand = new SqlCommand(query, _conn)
-            };
-            _adapter.Fill(_dt);
-            List<Question> questions = new List<Models.Question>(_dt.Rows.Count);
-            if (_dt.Rows.Count > 0)
-            {
-                foreach (DataRow questionrecord in _dt.Rows)
-                {
-                    questions.Add(new ReadQuestion(questionrecord));
-                }
-            }
+            db.Question.Add(question);
+            db.SaveChanges();
 
-            return questions;
-
+            return CreatedAtRoute("DefaultApi", new { id = question.Id }, question);
         }
 
-        // POST api/<controller>
-        public string Post([FromBody]createQuestion value)
+        // DELETE: api/Question/5
+        [ResponseType(typeof(Question))]
+        public IHttpActionResult DeleteQuestion(int id)
         {
-            _conn = new SqlConnection("data source=DESKTOP-O1N3VSU ; Initial catalog=qadb ; user id=sa; password=pass@word1;");
-            var query = "insert into Question(question)values(@question)";
-            SqlCommand insertcommand = new SqlCommand(query, _conn);
-            insertcommand.Parameters.AddWithValue("@question", value.question);
-            
-            _conn.Open();
-            int result = insertcommand.ExecuteNonQuery();
-            if (result > 0)
+            Question question = db.Question.Find(id);
+            if (question == null)
             {
-                return "true";
+                return NotFound();
+            }
 
-            }
-            else
-            {
-                return "false";
-            }
+            db.Question.Remove(question);
+            db.SaveChanges();
+
+            return Ok(question);
         }
 
-        // PUT api/<controller>/5
-        public string Put(int id, [FromBody]createQuestion value)
+        protected override void Dispose(bool disposing)
         {
-
-            _conn = new SqlConnection("data source=DESKTOP-O1N3VSU ; Initial catalog=qadb ; user id=sa; password=pass@word1;");
-            var query = " update Question set question=@question where id=" + id;
-            SqlCommand insertcommand = new SqlCommand(query, _conn);
-            insertcommand.Parameters.AddWithValue("@question", value.question);
-            
-            _conn.Open();
-            int result = insertcommand.ExecuteNonQuery();
-            if (result > 0)
+            if (disposing)
             {
-                return "true";
-
+                db.Dispose();
             }
-            else
-            {
-                return "false";
-            }
-
+            base.Dispose(disposing);
         }
 
-        // DELETE api/<controller>/5
-        public string Delete(int id)
+        private bool QuestionExists(int id)
         {
-
-            _conn = new SqlConnection("data source=DESKTOP-O1N3VSU ; Initial catalog=qadb ; user id=sa; password=pass@word1;");
-            var query = "delete from Question where id=" + id;
-            SqlCommand insertcommand = new SqlCommand(query, _conn);
-
-            _conn.Open();
-            int result = insertcommand.ExecuteNonQuery();
-            if (result > 0)
-            {
-                return "true";
-
-            }
-            else
-            {
-                return "false";
-            }
+            return db.Question.Count(e => e.Id == id) > 0;
         }
     }
+
 }
-
-

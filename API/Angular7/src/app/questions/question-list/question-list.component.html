@@ -1,0 +1,7 @@
+<table class="table table-hover">
+  <tr *ngFor="let dp of service.list">
+    <td (click)="populateForm(dp)">[{{dp.Id}}]-{{dp.question}}</td>
+    
+    <td><button (click)="onDelete(dp.Id)" class="btn btn-sm btn-outline-danger">X</button></td>
+  </tr>
+</table>

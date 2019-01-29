@@ -8,10 +8,9 @@
     <link rel="stylesheet" href="https://bootswatch.com/4/yeti/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
         crossorigin="anonymous">
-    <style>
-        .btn {
-            border-radius: 8px;
-        }</style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>.btn {border-radius: 8px;}</style>
+    <script src="./app.js"></script>
 </head>
 
 <body>
@@ -21,35 +20,28 @@
         <br>
         <form id="book-form">
             <div class="form-group">
-                <textarea style="margin-top:5px;" class="form-control" rows="3" id="myTextarea" placeholder="Enter your questions"></textarea>
-                <br> <button type="button" class="btn btn-primary " onclick="myQuestion()"><b>Post your Questions<b></button>
-                </button><br>
-                <p id="demo"></p>
-                <script>
-                    function myQuestion() {
-                        var x = document.getElementById("myTextarea").value;
-                        document.getElementById("demo").innerHTML = x;
-                    }
-                </script>
+                <br> <button type="button" class="btn btn-primary "><b>Post your Questions<b></button>
+                <table class="table table-striped mt-5" id="questions">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Questions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <br><button type="button" class="btn btn-primary" id="button"><b>Answers<b></button>
+                <table class="table table-striped mt-5" id="answers">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Answers</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div><br>
         </form>
-        <form id="book-form">
-            <div class="form-group">
-                <label>Answers for following Questions </label>
-                <textarea style="margin-top:5px;" class="form-control" rows="3" id="Textarea" placeholder="Enter your questions"></textarea>
-                <br> <button type="button" class="btn btn-primary " onclick="myAnswer()"><b>Submit<b></button>
-                </button>
-                <p id="demo1"></p>
-                <script>
-                    function myAnswer() {
-                        var x = document.getElementById("Textarea").value;
-                        document.getElementById("demo1").innerHTML = x;
-                    }
-
-                </script>
-            </div><br>
-        </form>
-
 </body>
 
 </html>
